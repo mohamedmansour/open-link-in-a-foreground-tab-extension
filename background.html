@@ -1,0 +1,65 @@
+<!doctype html> 
+<html>
+<head>
+<script>
+// Settings.
+settings = {
+  get version() {
+    return localStorage['version'];
+  },
+  set version(val) {
+    localStorage['version'] = val;
+  },
+};
+
+/**
+* Get the version number from the manifest.
+*/
+function getVersion() {
+  var version = 'NaN';
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', chrome.extension.getURL('manifest.json'), false);
+  xhr.send(null);
+  var manifest = JSON.parse(xhr.responseText);
+  return manifest.version;
+}
+
+/**
+ * Callback for context menu that opens link in the foreground tab.
+ * @param {dictionary<OnClickData>} info Information about the item clicked and
+                                    the context where the click happened.
+ * @param {dictionary<Tab>} tab The details of the tab where the click took place.
+ */
+function openLinkOnForeground(info, tab) {
+  chrome.tabs.create({url: info.linkUrl});
+}
+
+/**
+* Initialization routine.
+*/ 
+function init() {
+  // Check if the version has changed. In case we want to do something in the
+  // future.
+  var currVersion = getVersion();
+  var prevVersion = settings.version
+  if (currVersion != prevVersion) {
+    // Check if we just installed this extension.
+    if (typeof prevVersion == 'undefined') {
+      // Do nothing now.
+    }
+    // Update the version incase we want to do something in future.
+    settings.version = currVersion;
+  }
+  
+  // Install context menus on links.
+  chrome.contextMenus.create({
+    title: 'Open link in foreground tab',
+    contexts: ['link'],
+    onclick: openLinkOnForeground
+  });
+}
+
+init();
+</script>
+</head>
+</html>
