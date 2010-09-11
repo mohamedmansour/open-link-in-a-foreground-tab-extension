@@ -1,6 +1,6 @@
 {
  "name": "Open link in foreground tab",
- "version": "1.0.0",
+ "version": "1.0.1",
  "minimum_chrome_version": "6",
  "description": "Adds a context menu to open a link in a new foreground tab.",
  "icons": {

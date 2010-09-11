@@ -2,8 +2,15 @@
 <html>
 <head>
 <script>
+
+// When the context menu is triggered, save the current tab id so we can refer
+// to it back. Save the new tab id as well so we know if we first removed that
+// tab. This is to imitate the same functionality of "Open new tab"
+var currid = null;
+var newid = null;
+
 // Settings.
-settings = {
+var settings = {
   get version() {
     return localStorage['version'];
   },
@@ -31,8 +38,23 @@ function getVersion() {
  * @param {dictionary<Tab>} tab The details of the tab where the click took place.
  */
 function openLinkOnForeground(info, tab) {
-  chrome.tabs.create({url: info.linkUrl});
+  // Save tab index of current page.
+  currid = tab.id;
+  chrome.tabs.create({url: info.linkUrl, index: tab.index + 1}, function(tab) {
+    newid = tab.id;
+  });
 }
+
+/**
+ * Listens on tab removals. Update 
+ */
+chrome.tabs.onRemoved.addListener(function(tabId) {
+  if (newid && tabId == newid) {
+    chrome.tabs.update(currid, {selected: true})
+  } else {
+    newid = null; 
+  }
+});
 
 /**
 * Initialization routine.
