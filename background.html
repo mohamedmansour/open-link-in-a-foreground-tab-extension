@@ -73,9 +73,13 @@ function init() {
     settings.version = currVersion;
   }
   
+  // Whether we are using Linux or a Mac, we display the correct text case.
+  var isUnix = /Mac|Linux/.test(navigator.platform);
+  var title = isUnix ? 'Open Link in Foreground Tab' : 'Open link in foreground tab';
+      
   // Install context menus on links.
   chrome.contextMenus.create({
-    title: 'Open link in foreground tab',
+    title: title,
     contexts: ['link'],
     onclick: openLinkOnForeground
   });
